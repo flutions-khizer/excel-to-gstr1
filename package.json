@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:gh-pages": "GITHUB_PAGES=true next build",
+    "export": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",

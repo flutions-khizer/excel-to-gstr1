@@ -1,359 +1,147 @@
-# Deployment Guide for Linode
+# Deployment Guide for GitHub Pages
 
-This guide will help you deploy the Excel to GSTR-1 Converter application to a Linode instance.
+This guide will help you deploy the Excel to GSTR-1 Converter application to GitHub Pages.
 
 ## Prerequisites
 
-- A Linode account with a running Linux instance (Ubuntu 22.04 LTS recommended)
-- SSH access to your Linode instance
-- Docker and Docker Compose installed on your Linode instance
-- Domain name (optional, for production use)
+- A GitHub account
+- Git installed on your local machine
+- The repository pushed to GitHub
 
-## Step 1: Set Up Your Linode Instance
+## Quick Start
 
-### 1.1 Create a Linode Instance
+### Step 1: Enable GitHub Pages
 
-1. Log in to your [Linode Cloud Manager](https://cloud.linode.com)
-2. Click "Create" → "Linode"
-3. Choose:
-   - **Image**: Ubuntu 22.04 LTS
-   - **Region**: Choose closest to your users
-   - **Plan**: Shared CPU, Nanode 1GB (minimum) or higher
-   - **Root Password**: Set a strong password
-4. Click "Create Linode"
+1. Go to your repository on GitHub
+2. Click on **Settings** → **Pages**
+3. Under **Source**, select:
+   - **Source**: `GitHub Actions`
+4. Save the settings
 
-### 1.2 Configure Firewall (Optional but Recommended)
+### Step 2: Push Your Code
 
-1. Go to "Firewalls" in the Linode dashboard
-2. Create a new firewall with these rules:
-   - **Inbound**: Allow TCP port 22 (SSH)
-   - **Inbound**: Allow TCP port 80 (HTTP)
-   - **Inbound**: Allow TCP port 443 (HTTPS)
-   - **Inbound**: Allow TCP port 3000 (if not using reverse proxy)
-   - **Outbound**: Allow all
-
-### 1.3 Connect to Your Instance
+The GitHub Actions workflow will automatically deploy your app when you push to the `main` branch:
 
 ```bash
-ssh root@your-linode-ip-address
+git add .
+git commit -m "Configure for GitHub Pages deployment"
+git push origin main
 ```
 
-## Step 2: Install Docker and Docker Compose
+### Step 3: Monitor Deployment
 
-### 2.1 Update System Packages
+1. Go to the **Actions** tab in your GitHub repository
+2. You should see a workflow run called "Deploy to GitHub Pages"
+3. Wait for it to complete (usually takes 2-3 minutes)
+4. Once complete, your app will be available at:
+   - `https://<your-username>.github.io/<repository-name>/`
+
+## Manual Deployment
+
+If you want to build and test the static export locally:
 
 ```bash
-apt update && apt upgrade -y
+# Build for GitHub Pages
+npm run build:gh-pages
+
+# The static files will be in the 'out' directory
+# You can test locally using a static file server:
+npx serve out
 ```
 
-### 2.2 Install Docker
+## Custom Domain (Optional)
 
-```bash
-# Install prerequisites
-apt install -y apt-transport-https ca-certificates curl software-properties-common
+If you want to use a custom domain:
 
-# Add Docker's official GPG key
-install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-chmod a+r /etc/apt/keyrings/docker.gpg
+1. Create a file named `CNAME` in the `public` directory with your domain:
+   ```
+   example.com
+   ```
 
-# Add Docker repository
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  tee /etc/apt/sources.list.d/docker.list > /dev/null
+2. Update your DNS settings to point to GitHub Pages:
+   - Add a CNAME record pointing to `<your-username>.github.io`
 
-# Install Docker
-apt update
-apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+3. In GitHub repository settings → Pages, add your custom domain
 
-# Verify installation
-docker --version
-docker compose version
-```
+4. The workflow will automatically include the CNAME file in the deployment
 
-### 2.3 (Optional) Add Non-Root User for Docker
+## Repository Name Considerations
 
-```bash
-# Create a new user
-adduser deploy
-usermod -aG docker deploy
-usermod -aG sudo deploy
+The app automatically configures the base path based on your repository name. If your repository is named `excel-to-gstr1`, the app will be available at:
 
-# Switch to the new user
-su - deploy
-```
+- `https://<username>.github.io/excel-to-gstr1/`
 
-## Step 3: Deploy the Application
+If you want to deploy to the root of your GitHub Pages site (e.g., `https://<username>.github.io/`), you need to:
 
-### 3.1 Clone or Upload Your Application
+1. Name your repository `<username>.github.io`
+2. Or update the `basePath` in `next.config.ts` to an empty string for production
 
-**Option A: Using Git (Recommended)**
+## How It Works
 
-```bash
-# Install Git if not already installed
-apt install -y git
+1. **GitHub Actions Workflow**: The `.github/workflows/deploy.yml` file automatically:
+   - Builds your Next.js app as a static export
+   - Configures the correct base path for GitHub Pages
+   - Deploys the static files to GitHub Pages
 
-# Clone your repository
-git clone https://github.com/yourusername/excel-to-gstr1.git
-cd excel-to-gstr1
-```
+2. **Static Export**: Next.js exports your app as static HTML, CSS, and JavaScript files that can be served by GitHub Pages
 
-**Option B: Using SCP (from your local machine)**
-
-```bash
-# From your local machine
-scp -r /path/to/excel-to-gstr1 root@your-linode-ip:/opt/
-ssh root@your-linode-ip
-cd /opt/excel-to-gstr1
-```
-
-### 3.2 Build and Run with Docker Compose
-
-```bash
-# Build and start the container
-docker compose up -d --build
-
-# Check if the container is running
-docker compose ps
-
-# View logs
-docker compose logs -f app
-```
-
-The application should now be accessible at `http://your-linode-ip:3000`
-
-## Step 4: Set Up Reverse Proxy with Nginx (Recommended for Production)
-
-### 4.1 Install Nginx
-
-```bash
-apt install -y nginx
-```
-
-### 4.2 Configure Nginx
-
-Create a new configuration file:
-
-```bash
-nano /etc/nginx/sites-available/excel-to-gstr1
-```
-
-Add the following configuration:
-
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com www.your-domain.com;
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-```
-
-### 4.3 Enable the Site
-
-```bash
-# Create symbolic link
-ln -s /etc/nginx/sites-available/excel-to-gstr1 /etc/nginx/sites-enabled/
-
-# Test Nginx configuration
-nginx -t
-
-# Restart Nginx
-systemctl restart nginx
-systemctl enable nginx
-```
-
-### 4.4 Set Up SSL with Let's Encrypt (Recommended)
-
-```bash
-# Install Certbot
-apt install -y certbot python3-certbot-nginx
-
-# Obtain SSL certificate
-certbot --nginx -d your-domain.com -d www.your-domain.com
-
-# Certbot will automatically configure Nginx and set up auto-renewal
-```
-
-## Step 5: Set Up Automatic Updates and Monitoring
-
-### 5.1 Create a Systemd Service (Optional)
-
-Create a service file for better process management:
-
-```bash
-nano /etc/systemd/system/excel-to-gstr1.service
-```
-
-Add:
-
-```ini
-[Unit]
-Description=Excel to GSTR-1 Converter
-Requires=docker.service
-After=docker.service
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-WorkingDirectory=/opt/excel-to-gstr1
-ExecStart=/usr/bin/docker compose up -d
-ExecStop=/usr/bin/docker compose down
-TimeoutStartSec=0
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Enable and start:
-
-```bash
-systemctl daemon-reload
-systemctl enable excel-to-gstr1.service
-systemctl start excel-to-gstr1.service
-```
-
-### 5.2 Set Up Log Rotation
-
-```bash
-nano /etc/logrotate.d/excel-to-gstr1
-```
-
-Add:
-
-```
-/opt/excel-to-gstr1/logs/*.log {
-    daily
-    rotate 7
-    compress
-    delaycompress
-    notifempty
-    create 0640 deploy deploy
-}
-```
-
-## Step 6: Update and Maintain
-
-### 6.1 Update the Application
-
-```bash
-cd /opt/excel-to-gstr1
-
-# Pull latest changes (if using Git)
-git pull
-
-# Rebuild and restart
-docker compose down
-docker compose up -d --build
-```
-
-### 6.2 View Logs
-
-```bash
-# Application logs
-docker compose logs -f app
-
-# Last 100 lines
-docker compose logs --tail=100 app
-```
-
-### 6.3 Monitor Resources
-
-```bash
-# Check container status
-docker compose ps
-
-# Check resource usage
-docker stats
-
-# Check disk space
-df -h
-```
+3. **Automatic Deployment**: Every push to the `main` branch triggers a new deployment
 
 ## Troubleshooting
 
-### Container Won't Start
+### Build Fails
+
+- Check the **Actions** tab for error messages
+- Ensure all dependencies are listed in `package.json`
+- Verify that your code doesn't use server-side features (this app is client-side only, so it should work)
+
+### 404 Errors or Broken Links
+
+- Make sure the base path is correctly configured
+- Check that `trailingSlash: true` is set in `next.config.ts` (already configured)
+- Clear your browser cache
+
+### Assets Not Loading
+
+- Verify that the `basePath` in `next.config.ts` matches your repository name
+- Check that images use the `basePath` prefix (Next.js handles this automatically)
+
+### Deployment Not Triggering
+
+- Ensure GitHub Pages is set to use "GitHub Actions" as the source
+- Check that the workflow file is in `.github/workflows/deploy.yml`
+- Verify you're pushing to the `main` branch (or update the workflow to use your default branch)
+
+## Local Development vs Production
+
+- **Local Development**: Run `npm run dev` - the app runs at `http://localhost:3000`
+- **Production Build**: The GitHub Actions workflow automatically builds with the correct base path for GitHub Pages
+
+## Updating the App
+
+Simply push changes to the `main` branch:
 
 ```bash
-# Check logs
-docker compose logs app
-
-# Check if port 3000 is already in use
-netstat -tulpn | grep 3000
-
-# Rebuild from scratch
-docker compose down
-docker system prune -a
-docker compose up -d --build
+git add .
+git commit -m "Update app"
+git push origin main
 ```
 
-### Application Not Accessible
+The GitHub Actions workflow will automatically rebuild and redeploy your app.
 
-1. Check firewall rules in Linode dashboard
-2. Verify Nginx is running: `systemctl status nginx`
-3. Check Nginx error logs: `tail -f /var/log/nginx/error.log`
-4. Verify Docker container is running: `docker compose ps`
+## File Structure
 
-### Out of Memory Issues
-
-If you experience memory issues, consider:
-- Upgrading your Linode plan
-- Adding swap space
-- Optimizing Docker images
-
-## Security Best Practices
-
-1. **Keep system updated**: `apt update && apt upgrade -y`
-2. **Use SSH keys** instead of passwords
-3. **Configure firewall** to only allow necessary ports
-4. **Use SSL/HTTPS** for production
-5. **Regular backups** of your application data
-6. **Monitor logs** for suspicious activity
-7. **Use non-root user** for running applications
-
-## Backup Strategy
-
-### Backup Application Code
-
-```bash
-# Create backup directory
-mkdir -p /opt/backups
-
-# Backup application
-tar -czf /opt/backups/excel-to-gstr1-$(date +%Y%m%d).tar.gz /opt/excel-to-gstr1
-```
-
-### Automated Backups (Cron)
-
-```bash
-crontab -e
-```
-
-Add:
-
-```
-0 2 * * * tar -czf /opt/backups/excel-to-gstr1-$(date +\%Y\%m\%d).tar.gz /opt/excel-to-gstr1 && find /opt/backups -name "*.tar.gz" -mtime +7 -delete
-```
+After deployment, the static files are in the `out` directory (not committed to git). The GitHub Actions workflow handles the build and deployment automatically.
 
 ## Additional Resources
 
-- [Linode Documentation](https://www.linode.com/docs/)
-- [Docker Documentation](https://docs.docker.com/)
-- [Next.js Deployment](https://nextjs.org/docs/deployment)
-- [Nginx Documentation](https://nginx.org/en/docs/)
+- [Next.js Static Export Documentation](https://nextjs.org/docs/app/building-your-application/deploying/static-exports)
+- [GitHub Pages Documentation](https://docs.github.com/en/pages)
+- [GitHub Actions Documentation](https://docs.github.com/en/actions)
 
-## Support
+## Notes
 
-For issues specific to this application, please check the main README.md file or open an issue in the repository.
-
+- This app is 100% client-side, making it perfect for static hosting
+- No server or database required
+- All processing happens in the user's browser
+- Free hosting on GitHub Pages
