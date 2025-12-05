@@ -120,7 +120,7 @@ export default function Home() {
           <h1 className="text-3xl font-bold text-gray-900">
             Excel to GSTR-1 JSON Converter
           </h1>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-gray-800">
             Convert your Excel sales invoice data into GSTR-1 JSON format
           </p>
         </div>
@@ -139,9 +139,9 @@ export default function Home() {
           />
 
           {parseError && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-red-800 font-medium">Parse Error:</p>
-              <p className="text-red-700">{parseError}</p>
+            <div className="bg-red-50 border border-red-300 rounded-lg p-4">
+              <p className="text-red-900 font-semibold">Parse Error:</p>
+              <p className="text-red-800 mt-1">{parseError}</p>
             </div>
           )}
 
@@ -153,10 +153,10 @@ export default function Home() {
           {/* Section 4: Generate JSON */}
           {parsedData && (
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <h2 className="text-xl font-semibold mb-4">Generate GSTR-1 JSON</h2>
+              <h2 className="text-xl font-semibold mb-4 text-gray-900">Generate GSTR-1 JSON</h2>
               {!metaInfo && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
-                  <p className="text-yellow-800 text-sm">
+                <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-3 mb-4">
+                  <p className="text-yellow-900 text-sm font-medium">
                     <strong>Note:</strong> Please fill in and save GST meta information above before generating JSON.
                   </p>
                 </div>
@@ -185,7 +185,7 @@ export default function Home() {
 
       <footer className="bg-white border-t mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <p className="text-center text-sm text-gray-500">
+          <p className="text-center text-sm text-gray-700">
             Excel to GSTR-1 JSON Converter - Built with Next.js and TypeScript
           </p>
         </div>

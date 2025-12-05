@@ -11,7 +11,7 @@ export default function TablePreview({ data, maxRows = 10 }: TablePreviewProps) 
   if (!data) {
     return (
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <p className="text-gray-500">No data to preview. Please parse Excel data first.</p>
+        <p className="text-gray-700">No data to preview. Please parse Excel data first.</p>
       </div>
     );
   }
@@ -21,9 +21,9 @@ export default function TablePreview({ data, maxRows = 10 }: TablePreviewProps) 
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <h2 className="text-xl font-semibold mb-4">
+      <h2 className="text-xl font-semibold mb-4 text-gray-900">
         Parsed Table Preview
-        <span className="text-sm font-normal text-gray-500 ml-2">
+        <span className="text-sm font-normal text-gray-700 ml-2">
           ({data.rows.length} row{data.rows.length !== 1 ? "s" : ""} total)
         </span>
       </h2>
@@ -34,7 +34,7 @@ export default function TablePreview({ data, maxRows = 10 }: TablePreviewProps) 
               {data.headers.map((header, idx) => (
                 <th
                   key={idx}
-                  className="border border-gray-300 px-3 py-2 text-left font-semibold"
+                  className="border border-gray-300 px-3 py-2 text-left font-semibold text-gray-900"
                 >
                   {header || `Column ${idx + 1}`}
                 </th>
@@ -47,9 +47,9 @@ export default function TablePreview({ data, maxRows = 10 }: TablePreviewProps) 
                 {row.map((cell, cellIdx) => (
                   <td
                     key={cellIdx}
-                    className="border border-gray-300 px-3 py-2 text-gray-700"
+                    className="border border-gray-300 px-3 py-2 text-gray-900"
                   >
-                    {cell || <span className="text-gray-400">—</span>}
+                    {cell || <span className="text-gray-500">—</span>}
                   </td>
                 ))}
               </tr>
@@ -57,7 +57,7 @@ export default function TablePreview({ data, maxRows = 10 }: TablePreviewProps) 
           </tbody>
         </table>
         {hasMore && (
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-gray-700 mt-2">
             Showing first {maxRows} rows. {data.rows.length - maxRows} more rows available.
           </p>
         )}

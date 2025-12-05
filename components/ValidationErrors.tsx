@@ -12,15 +12,15 @@ export default function ValidationErrors({ errors }: ValidationErrorsProps) {
   }
 
   return (
-    <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-      <h3 className="text-lg font-semibold text-red-800 mb-2">
+    <div className="bg-red-50 border border-red-300 rounded-lg p-4 mb-6">
+      <h3 className="text-lg font-semibold text-red-900 mb-2">
         Validation Errors ({errors.length})
       </h3>
       <div className="max-h-64 overflow-y-auto">
         <ul className="space-y-1 text-sm">
           {errors.map((error, idx) => (
-            <li key={idx} className="text-red-700">
-              <span className="font-medium">Row {error.row}</span> - {error.field}: {error.message}
+            <li key={idx} className="text-red-800">
+              <span className="font-semibold text-red-900">Row {error.row}</span> - {error.field}: {error.message}
             </li>
           ))}
         </ul>

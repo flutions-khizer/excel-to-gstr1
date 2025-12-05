@@ -82,18 +82,18 @@ export default function MetaForm({ onSave, initialMeta }: MetaFormProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <h2 className="text-xl font-semibold mb-4">GST Meta Information</h2>
+      <h2 className="text-xl font-semibold mb-4 text-gray-900">GST Meta Information</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="gstin" className="block text-sm font-medium text-gray-700 mb-1">
-            GSTIN <span className="text-red-500">*</span>
+          <label htmlFor="gstin" className="block text-sm font-medium text-gray-900 mb-1">
+            GSTIN <span className="text-red-600 font-semibold">*</span>
           </label>
           <input
             type="text"
             id="gstin"
             value={meta.gstin}
             onChange={(e) => setMeta({ ...meta, gstin: e.target.value.toUpperCase() })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             placeholder="15-character GSTIN"
             maxLength={15}
             required
@@ -101,7 +101,7 @@ export default function MetaForm({ onSave, initialMeta }: MetaFormProps) {
         </div>
 
         <div>
-          <label htmlFor="legalName" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="legalName" className="block text-sm font-medium text-gray-900 mb-1">
             Legal Name (Optional)
           </label>
           <input
@@ -109,15 +109,15 @@ export default function MetaForm({ onSave, initialMeta }: MetaFormProps) {
             id="legalName"
             value={meta.legalName}
             onChange={(e) => setMeta({ ...meta, legalName: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             placeholder="Legal name of business"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label htmlFor="financialYear" className="block text-sm font-medium text-gray-700 mb-1">
-              Financial Year <span className="text-red-500">*</span>
+            <label htmlFor="financialYear" className="block text-sm font-medium text-gray-900 mb-1">
+              Financial Year <span className="text-red-600 font-semibold">*</span>
             </label>
             <select
               id="financialYear"
@@ -132,7 +132,7 @@ export default function MetaForm({ onSave, initialMeta }: MetaFormProps) {
                   returnPeriod: currentMonth + fullYear,
                 });
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               required
             >
               {financialYears.map((year) => (
@@ -144,8 +144,8 @@ export default function MetaForm({ onSave, initialMeta }: MetaFormProps) {
           </div>
 
           <div>
-            <label htmlFor="returnPeriod" className="block text-sm font-medium text-gray-700 mb-1">
-              Return Period <span className="text-red-500">*</span>
+            <label htmlFor="returnPeriod" className="block text-sm font-medium text-gray-900 mb-1">
+              Return Period <span className="text-red-600 font-semibold">*</span>
             </label>
             <div className="grid grid-cols-2 gap-2">
               <select
@@ -158,7 +158,7 @@ export default function MetaForm({ onSave, initialMeta }: MetaFormProps) {
                   const fullYear = currentFY.substring(0, 2) + (meta.returnPeriod && meta.returnPeriod.length >= 6 ? meta.returnPeriod.substring(4, 6) : currentFY.substring(2, 4));
                   setMeta({ ...meta, returnPeriod: month + fullYear });
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                 required
               >
                 {months.map((month) => (
@@ -177,7 +177,7 @@ export default function MetaForm({ onSave, initialMeta }: MetaFormProps) {
                   const month = meta.returnPeriod && meta.returnPeriod.length >= 2 ? meta.returnPeriod.substring(0, 2) : "10";
                   setMeta({ ...meta, returnPeriod: month + fullYear });
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                 required
               >
                 {financialYears.map((fy) => {
@@ -190,7 +190,7 @@ export default function MetaForm({ onSave, initialMeta }: MetaFormProps) {
                 })}
               </select>
             </div>
-            <p className="text-xs text-gray-500 mt-1">Select month and financial year</p>
+            <p className="text-xs text-gray-700 mt-1">Select month and financial year</p>
           </div>
         </div>
 

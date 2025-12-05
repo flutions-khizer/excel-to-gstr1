@@ -63,20 +63,20 @@ export default function ColumnMappingForm({
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <h2 className="text-xl font-semibold mb-4">Column Mapping</h2>
-      <p className="text-sm text-gray-600 mb-4">
+      <h2 className="text-xl font-semibold mb-4 text-gray-900">Column Mapping</h2>
+      <p className="text-sm text-gray-800 mb-4">
         Map each logical field to the corresponding Excel column. Required fields are marked with{" "}
-        <span className="text-red-500">*</span>.
+        <span className="text-red-600 font-semibold">*</span>.
       </p>
 
       <div className="space-y-4">
         <div>
-          <h3 className="font-medium text-gray-700 mb-2">Required Fields</h3>
+          <h3 className="font-medium text-gray-900 mb-2">Required Fields</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {requiredFields.map((fieldInfo) => (
               <div key={fieldInfo.key}>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {fieldInfo.label} <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-gray-900 mb-1">
+                  {fieldInfo.label} <span className="text-red-600 font-semibold">*</span>
                 </label>
                 <select
                   value={mapping[fieldInfo.key] ?? ""}
@@ -86,7 +86,7 @@ export default function ColumnMappingForm({
                       e.target.value === "" ? undefined : parseInt(e.target.value, 10)
                     )
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white"
                   required
                 >
                   <option value="">-- Select Column --</option>
@@ -97,7 +97,7 @@ export default function ColumnMappingForm({
                   ))}
                 </select>
                 {fieldInfo.description && (
-                  <p className="text-xs text-gray-500 mt-1">{fieldInfo.description}</p>
+                  <p className="text-xs text-gray-700 mt-1">{fieldInfo.description}</p>
                 )}
               </div>
             ))}
@@ -106,11 +106,11 @@ export default function ColumnMappingForm({
 
         {optionalFields.length > 0 && (
           <div>
-            <h3 className="font-medium text-gray-700 mb-2">Optional Fields</h3>
+            <h3 className="font-medium text-gray-900 mb-2">Optional Fields</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {optionalFields.map((fieldInfo) => (
                 <div key={fieldInfo.key}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-900 mb-1">
                     {fieldInfo.label}
                   </label>
                   <select
@@ -121,7 +121,7 @@ export default function ColumnMappingForm({
                         e.target.value === "" ? undefined : parseInt(e.target.value, 10)
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-900 bg-white"
                   >
                     <option value="">-- Select Column --</option>
                     {parsedData.headers.map((header, idx) => (
@@ -131,7 +131,7 @@ export default function ColumnMappingForm({
                     ))}
                   </select>
                   {fieldInfo.description && (
-                    <p className="text-xs text-gray-500 mt-1">{fieldInfo.description}</p>
+                    <p className="text-xs text-gray-700 mt-1">{fieldInfo.description}</p>
                   )}
                 </div>
               ))}
